@@ -1,13 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_admin_dashboard_template/features/users/user_not_found_page.dart';
+import 'package:flutter_ltdddoan/features/customers/customer_not_found_page.dart';
+import 'package:flutter_ltdddoan/model/customer_model.dart';
+import 'package:flutter_ltdddoan/repositories/customer/customer_repository.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/dashboard/dashbord_page.dart';
-import 'features/users/dummy_users.dart';
-import 'features/users/user_page.dart';
-import 'features/users/users_page.dart';
+import 'features/customers/customer_page.dart';
+import 'features/customers/customers_page.dart';
 import 'widgets/widgets.dart';
 
 part 'router.g.dart';
@@ -31,11 +32,11 @@ final router = GoRouter(
     ),
     TypedStatefulShellBranch(
       routes: [
-        TypedGoRoute<UsersPageRoute>(
-          path: '/users',
+        TypedGoRoute<CustomersPageRoute>(
+          path: '/customers',
           routes: [
-            TypedGoRoute<UserPageRoute>(
-              path: ':userId',
+            TypedGoRoute<CustomerPageRoute>(
+              path: ':customerId',
             ),
           ],
         ),
@@ -69,25 +70,33 @@ class DashboardRoute extends GoRouteData {
   }
 }
 
-class UsersPageRoute extends GoRouteData {
-  const UsersPageRoute();
+class CustomersPageRoute extends GoRouteData {
+  const CustomersPageRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const UsersPage();
+    return const CustomersPage();
   }
 }
 
-class UserPageRoute extends GoRouteData {
-  const UserPageRoute({required this.userId});
-
-  final String userId;
-
+class CustomerPageRoute extends GoRouteData {
+  const CustomerPageRoute({required this.customerId});
+  final String customerId;
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    final user = dummyUsers.firstWhereOrNull((e) => e.userId == userId);
-    return user == null
-        ? UserNotFoundPage(userId: userId)
-        : UserPage(user: user);
+    CustomerRepository customerRepository = CustomerRepository();
+    return FutureBuilder<Customer?>(
+      future: customerRepository.getCustomerById(customerId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else {
+          final customer = snapshot.data;
+          return customer == null
+              ? CustomerNotFoundPage(customerId: customerId)
+              : CustomerPage(customer: customer);
+        }
+      },
+    );
   }
 }

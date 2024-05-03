@@ -24,12 +24,12 @@ RouteBase get $shellRouteData => StatefulShellRouteData.$route(
         StatefulShellBranchData.$branch(
           routes: [
             GoRouteData.$route(
-              path: '/users',
-              factory: $UsersPageRouteExtension._fromState,
+              path: '/customers',
+              factory: $CustomersPageRouteExtension._fromState,
               routes: [
                 GoRouteData.$route(
-                  path: ':userId',
-                  factory: $UserPageRouteExtension._fromState,
+                  path: ':customerId',
+                  factory: $CustomerPageRouteExtension._fromState,
                 ),
               ],
             ),
@@ -61,12 +61,12 @@ extension $DashboardRouteExtension on DashboardRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $UsersPageRouteExtension on UsersPageRoute {
-  static UsersPageRoute _fromState(GoRouterState state) =>
-      const UsersPageRoute();
+extension $CustomersPageRouteExtension on CustomersPageRoute {
+  static CustomersPageRoute _fromState(GoRouterState state) =>
+      const CustomersPageRoute();
 
   String get location => GoRouteData.$location(
-        '/users',
+        '/customers',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -79,13 +79,13 @@ extension $UsersPageRouteExtension on UsersPageRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $UserPageRouteExtension on UserPageRoute {
-  static UserPageRoute _fromState(GoRouterState state) => UserPageRoute(
-        userId: state.pathParameters['userId']!,
+extension $CustomerPageRouteExtension on CustomerPageRoute {
+  static CustomerPageRoute _fromState(GoRouterState state) => CustomerPageRoute(
+        customerId: state.pathParameters['customerId']!,
       );
 
   String get location => GoRouteData.$location(
-        '/users/${Uri.encodeComponent(userId)}',
+        '/customers/${Uri.encodeComponent(customerId)}',
       );
 
   void go(BuildContext context) => context.go(location);

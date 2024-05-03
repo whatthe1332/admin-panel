@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_admin_dashboard_template/features/dashboard/dummy_inventories.dart';
-import 'package:flutter_admin_dashboard_template/features/dashboard/inventory.dart';
+import 'package:flutter_ltdddoan/features/dashboard/dummy_inventories.dart';
+import 'package:flutter_ltdddoan/features/dashboard/inventory.dart';
 import 'package:gap/gap.dart';
 import 'package:intersperse/intersperse.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -72,7 +72,6 @@ class _TableView extends StatelessWidget {
         columnBuilder: (index) {
           return TableSpan(
             foregroundDecoration: index == 0 ? decoration : null,
-            // Viewportに対して8分割した幅に調整してくれる
             extent: const FractionalTableSpanExtent(1 / 8),
           );
         },

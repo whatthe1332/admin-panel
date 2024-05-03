@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_admin_dashboard_template/main.dart';
-import 'package:flutter_admin_dashboard_template/widgets/widgets.dart';
+import 'package:flutter_ltdddoan/main.dart';
+import 'package:flutter_ltdddoan/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class UserNotFoundPage extends StatelessWidget {
-  const UserNotFoundPage({super.key, required this.userId});
+class CustomerNotFoundPage extends StatelessWidget {
+  const CustomerNotFoundPage({super.key, required this.customerId});
 
-  final String userId;
+  final String customerId;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class UserNotFoundPage extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const Gap(8),
-            Text('[$userId] is not found'),
+            Text('[$customerId] is not found'),
           ],
         ),
       ),
