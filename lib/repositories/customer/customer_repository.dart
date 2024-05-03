@@ -17,11 +17,15 @@ class CustomerRepository {
           customerEmail: doc['customerEmail'],
           customerPassword: doc['customerPassword'],
           customerGender: doc['customerGender'],
-          customerBirthDay: doc['customerBirthDay'].toDate(),
+          customerBirthDay: doc['customerBirthDay'] != null
+              ? doc['customerBirthDay'].toDate()
+              : null,
           isActive: doc['isActive'],
           createdBy: doc['createdBy'],
-          createDate: doc['createDate'].toDate(),
-          updatedDate: doc['updatedDate'].toDate(),
+          createDate:
+              doc['createDate'] != null ? doc['createDate'].toDate() : null,
+          updatedDate:
+              doc['updatedDate'] != null ? doc['updatedDate'].toDate() : null,
           updatedBy: doc['updatedBy'],
           customerAvatar: doc['customerAvatar'],
         );
@@ -69,6 +73,46 @@ class CustomerRepository {
     } catch (error) {
       print('Error getting customer: $error');
       return null;
+    }
+  }
+
+  Future<void> updateCustomer(Customer updatedCustomer) async {
+    try {
+      await _customerCollection.doc(updatedCustomer.customerId).update({
+        'customerName': updatedCustomer.customerName,
+        'customerEmail': updatedCustomer.customerEmail,
+        'customerPassword': updatedCustomer.customerPassword,
+        'isActive': updatedCustomer.isActive,
+        'updatedDate': updatedCustomer.updatedDate,
+        'updatedBy': updatedCustomer.updatedBy,
+        'customerAvatar': updatedCustomer.customerAvatar,
+        'customerGender': updatedCustomer.customerGender,
+        'customerBirthDay': updatedCustomer.customerBirthDay,
+      });
+    } catch (error) {
+      print('Error updating customer: $error');
+      throw error;
+    }
+  }
+
+  Future<void> addCustomer(Customer newCustomer) async {
+    try {
+      await _customerCollection.add({
+        'customerName': newCustomer.customerName,
+        'customerEmail': newCustomer.customerEmail,
+        'customerPassword': newCustomer.customerPassword,
+        'isActive': newCustomer.isActive,
+        'createdBy': newCustomer.createdBy,
+        'createDate': newCustomer.createDate,
+        'updatedDate': newCustomer.updatedDate,
+        'updatedBy': newCustomer.updatedBy,
+        'customerAvatar': newCustomer.customerAvatar,
+        'customerGender': newCustomer.customerGender,
+        'customerBirthDay': newCustomer.customerBirthDay,
+      });
+    } catch (error) {
+      print('Error adding customer: $error');
+      throw error;
     }
   }
 }

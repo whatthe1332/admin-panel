@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ltdddoan/model/customer_model.dart';
 import 'package:flutter_ltdddoan/repositories/customer/customer_repository.dart';
-import 'package:flutter_ltdddoan/router.dart';
+import 'package:flutter_ltdddoan/features/customers/customer_page.dart';
 import 'package:gap/gap.dart';
 
 import '../../widgets/widgets.dart';
 
-class CustomersPage extends StatelessWidget {
+class CustomersPage extends StatefulWidget {
   const CustomersPage({Key? key});
+
+  @override
+  _CustomersPageState createState() => _CustomersPageState();
+}
+
+class _CustomersPageState extends State<CustomersPage> {
+  late final CustomerRepository customerRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    customerRepository = CustomerRepository();
+  }
+
+  Future<void> _updateCustomerList() async {
+    setState(() {}); // Trigger rebuild to update customer list
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final customerRepository = CustomerRepository();
 
     return ContentView(
       child: Column(
@@ -51,9 +67,19 @@ class CustomersPage extends StatelessWidget {
                             style: theme.textTheme.labelMedium,
                           ),
                           trailing: const Icon(Icons.navigate_next_outlined),
-                          onTap: () {
-                            CustomerPageRoute(customerId: customer.customerId!)
-                                .go(context);
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CustomerPage(customer: customer),
+                              ),
+                            );
+
+                            if (result != null && result == true) {
+                              // Reload customer list
+                              await _updateCustomerList();
+                            }
                           },
                         );
                       },

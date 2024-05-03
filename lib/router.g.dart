@@ -80,12 +80,11 @@ extension $CustomersPageRouteExtension on CustomersPageRoute {
 }
 
 extension $CustomerPageRouteExtension on CustomerPageRoute {
-  static CustomerPageRoute _fromState(GoRouterState state) => CustomerPageRoute(
-        customerId: state.pathParameters['customerId']!,
-      );
+  static CustomerPageRoute _fromState(GoRouterState state) =>
+      CustomerPageRoute(customerId: state.pathParameters['customerId']!);
 
   String get location => GoRouteData.$location(
-        '/customers/${Uri.encodeComponent(customerId)}',
+        '/customers/${customerId}',
       );
 
   void go(BuildContext context) => context.go(location);
