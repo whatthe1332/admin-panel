@@ -128,4 +128,39 @@ class ProductRepository {
       return []; // Trả về danh sách rỗng nếu có lỗi
     }
   }
+
+  Future<void> deleteProduct(String productId) async {
+    try {
+      // Xóa sản phẩm từ Firestore
+      await _productCollection.doc(productId).delete();
+
+      // Xóa các hình ảnh liên quan từ Firebase Storage
+      await deleteProductImages(productId);
+
+      print('Product with ID $productId deleted');
+    } catch (error) {
+      print('Error deleting product: $error');
+      throw error;
+    }
+  }
+
+  Future<void> deleteProductImages(String documentId) async {
+    try {
+      String storagePath = 'products_images/$documentId';
+      final ref =
+          firebase_storage.FirebaseStorage.instance.ref().child(storagePath);
+
+      // Lấy danh sách các hình ảnh trong thư mục
+      final firebase_storage.ListResult result = await ref.listAll();
+
+      // Xóa từng hình ảnh trong thư mục
+      for (final item in result.items) {
+        await item.delete();
+      }
+
+      print('Deleted all images for product $documentId');
+    } catch (e) {
+      print('Error deleting product images: $e');
+    }
+  }
 }

@@ -3,8 +3,12 @@ import 'package:recase/recase.dart';
 
 enum NavigationItem {
   dashboard(iconData: Icons.dashboard_outlined),
-  users(iconData: Icons.list_outlined),
-  ;
+  customers(iconData: Icons.list_outlined),
+  products(iconData: Icons.shopping_bag),
+  productCategories(iconData: Icons.pages),
+  genderCategories(iconData: Icons.male),
+  sizeProduct(iconData: Icons.minimize),
+  availableSizeProduct(iconData: Icons.event_available);
 
   const NavigationItem({required this.iconData});
   final IconData iconData;

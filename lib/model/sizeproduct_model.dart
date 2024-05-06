@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class SizeProduct {
-  final String? sizeProductId;
+  final String sizeProductId;
   final String name;
   final bool isActive;
   final String createdBy;
@@ -16,4 +18,16 @@ class SizeProduct {
     required this.updatedDate,
     required this.updatedBy,
   });
+
+  factory SizeProduct.fromDocument(DocumentSnapshot doc) {
+    return SizeProduct(
+      sizeProductId: doc.id,
+      name: doc['name'],
+      isActive: doc['isActive'],
+      createdBy: doc['createdBy'],
+      createDate: doc['createDate'].toDate(),
+      updatedDate: doc['updatedDate'].toDate(),
+      updatedBy: doc['updatedBy'],
+    );
+  }
 }

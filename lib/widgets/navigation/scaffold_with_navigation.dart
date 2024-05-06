@@ -136,32 +136,32 @@ class _NavigationRail extends StatelessWidget {
   }
 }
 
-// class _ScaffoldWithNavigationBar extends StatelessWidget {
-//   const _ScaffoldWithNavigationBar(this.navigationShell);
+class _ScaffoldWithNavigationBar extends StatelessWidget {
+  const _ScaffoldWithNavigationBar(this.navigationShell);
 
-//   final StatefulNavigationShell navigationShell;
+  final StatefulNavigationShell navigationShell;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: const NavigationAppBar(),
-//       body: navigationShell,
-//       bottomNavigationBar: NavigationBar(
-//         selectedIndex: navigationShell.currentIndex,
-//         onDestinationSelected: (index) {
-//           navigationShell.goBranch(
-//             index,
-//             initialLocation: index == navigationShell.currentIndex,
-//           );
-//         },
-//         destinations: [
-//           for (final item in NavigationItem.values)
-//             NavigationDestination(
-//               icon: Icon(item.iconData),
-//               label: item.label,
-//             ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const NavigationAppBar(),
+      body: navigationShell,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: (index) {
+          navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          );
+        },
+        destinations: [
+          for (final item in NavigationItem.values)
+            NavigationDestination(
+              icon: Icon(item.iconData),
+              label: item.label,
+            ),
+        ],
+      ),
+    );
+  }
+}

@@ -34,9 +34,12 @@ class _CustomersPageState extends State<CustomersPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PageHeader(
-            title: 'Customers',
-            description: 'List of customers who can sign in to this dashboard.',
+          Text(
+            'Danh sách Customers',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const Gap(16),
           Expanded(
