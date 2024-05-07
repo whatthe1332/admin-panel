@@ -57,8 +57,7 @@ class ProductRepository {
 
   Future<void> addProduct(Product newProduct, List<String> imageFiles) async {
     try {
-      // Thêm sản phẩm mới vào Firestore
-      await _productCollection.add({
+      DocumentReference docRef = await _productCollection.add({
         'name': newProduct.name,
         'description': newProduct.description,
         'price': newProduct.price,
@@ -77,15 +76,17 @@ class ProductRepository {
         'genderCategoryId': newProduct.genderCategoryId,
         'productCategoryId': newProduct.productCategoryId,
         'discountId': newProduct.discountId,
-      }).then((DocumentReference docRef) async {
-        // Lấy ID của sản phẩm đã thêm
-        final productId = docRef.id;
-
-        // Upload hình ảnh
-        //await _uploadImages(productId, imageFiles);
-        await uploadImageUrls(productId, imageFiles);
-        print('Product added with ID: $productId');
       });
+
+      // Lấy ID của sản phẩm đã thêm
+      final productId = docRef.id;
+
+      // Cập nhật trường productId của tài liệu Firestore với giá trị mới
+      await docRef.update({'productId': productId});
+
+      // Upload hình ảnh
+      await uploadImageUrls(productId, imageFiles);
+      print('Product added with ID: $productId');
     } catch (error) {
       print('Error adding product: $error');
       throw error;

@@ -1,33 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ltdddoan/features/Products/add_product_page.dart';
-import 'package:flutter_ltdddoan/features/Products/product_page.dart';
-import 'package:flutter_ltdddoan/model/product_model.dart';
-import 'package:flutter_ltdddoan/repositories/products/getproduct_list.dart';
+import 'package:flutter_ltdddoan/repositories/payment/paymentmethod_repository.dart';
 import 'package:gap/gap.dart';
-import '../../widgets/widgets.dart';
 
-class ProductsPage extends StatefulWidget {
-  const ProductsPage({Key? key});
+import '../../widgets/widgets.dart';
+import 'add_paymentMethod_page.dart';
+import 'paymentMethod_page.dart';
+import 'package:flutter_ltdddoan/model/paymentmethod_model.dart';
+
+class PaymentMethodsPage extends StatefulWidget {
+  const PaymentMethodsPage({Key? key});
 
   @override
-  _ProductsPageState createState() => _ProductsPageState();
+  _PaymentMethodsPageState createState() => _PaymentMethodsPageState();
 }
 
-class _ProductsPageState extends State<ProductsPage> {
-  late final ProductRepository productRepository;
+class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
+  // Declare the repository instance
+  late final PaymentMethodRepository paymentMethodRepository;
 
   @override
   void initState() {
     super.initState();
-    productRepository = ProductRepository();
+    // Initialize the repository instance
+    paymentMethodRepository = PaymentMethodRepository();
   }
 
-  Future<void> _updateProductList() async {
-    setState(() {});
+  Future<void> _updatePaymentMethodList() async {
+    setState(() {}); // Trigger rebuild to update payment method list
   }
 
-  Future<bool?> _showDeleteConfirmationDialog(BuildContext context,
-      Product product, List<Product> products, int index) async {
+  Future<bool?> _showDeleteConfirmationDialog(
+      BuildContext context,
+      PaymentMethod paymentMethod,
+      List<PaymentMethod> paymentMethods,
+      int index) async {
     return await showDialog<bool?>(
       context: context,
       barrierDismissible: false,
@@ -37,26 +43,25 @@ class _ProductsPageState extends State<ProductsPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Bạn có chắc muốn xóa sản phẩm này không?'),
+                Text('Bạn có chắc muốn xóa phương thức thanh toán này không?'),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false); // Không xóa
+                Navigator.of(context).pop(false);
               },
               child: Text('Không'),
             ),
             TextButton(
               onPressed: () async {
-                // Xác nhận xóa
-                await productRepository.deleteProduct(product.productId);
-                // Xóa khỏi danh sách sản phẩm
+                await paymentMethodRepository
+                    .deletePaymentMethod(paymentMethod.paymentMethodId!);
                 setState(() {
-                  products.removeAt(index);
+                  paymentMethods.removeAt(index);
                 });
-                Navigator.of(context).pop(true); // Xác nhận xóa
+                Navigator.of(context).pop(true);
               },
               child: Text('Có'),
             ),
@@ -78,7 +83,7 @@ class _ProductsPageState extends State<ProductsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Sản phẩm',
+                'Phương thức thanh toán',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -89,12 +94,13 @@ class _ProductsPageState extends State<ProductsPage> {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddProductPage(),
+                      builder: (context) => AddPaymentMethodPage(),
                     ),
                   );
 
                   if (result != null && result == true) {
-                    await _updateProductList();
+                    // Reload payment method list
+                    await _updatePaymentMethodList();
                   }
                 },
                 child: Text('Thêm'),
@@ -103,29 +109,29 @@ class _ProductsPageState extends State<ProductsPage> {
           ),
           const Gap(16),
           Expanded(
-            child: FutureBuilder<List<Product>>(
-              future: productRepository.getAllProducts(),
+            child: FutureBuilder<List<PaymentMethod>>(
+              future: paymentMethodRepository.getPaymentMethods(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  List<Product> products = snapshot.data!;
+                  List<PaymentMethod> paymentMethods = snapshot.data!;
                   return Card(
                     clipBehavior: Clip.antiAlias,
                     child: ListView.separated(
-                      itemCount: products.length,
+                      itemCount: paymentMethods.length,
                       separatorBuilder: (context, index) => const Divider(),
                       itemBuilder: (context, index) {
-                        final product = products[index];
+                        final paymentMethod = paymentMethods[index];
                         return Dismissible(
-                          key: Key(product.productId),
+                          key: Key(paymentMethod.paymentMethodId!),
                           direction: DismissDirection.startToEnd,
                           confirmDismiss: (direction) async {
-                            // Hiển thị hộp thoại xác nhận và chờ kết quả
+                            // Show confirmation dialog and wait for result
                             return await _showDeleteConfirmationDialog(
-                                context, product, products, index);
+                                context, paymentMethod, paymentMethods, index);
                           },
                           background: Container(
                             alignment: Alignment.centerLeft,
@@ -135,20 +141,30 @@ class _ProductsPageState extends State<ProductsPage> {
                           ),
                           child: ListTile(
                             leading: Image.network(
-                              product.imageUrls.isNotEmpty
-                                  ? product.imageUrls.first
+                              paymentMethod.icon.isNotEmpty
+                                  ? paymentMethod.icon
                                   : 'assets/images/default_product.png',
                               width: 50,
                               height: 50,
                               fit: BoxFit.cover,
+                              errorBuilder: (BuildContext context, Object error,
+                                  StackTrace? stackTrace) {
+                                // Xử lý khi hình ảnh không thể tải
+                                return Image.asset(
+                                  'assets/images/default_product.png',
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                );
+                              },
                             ),
                             title: Text(
-                              product.name,
+                              paymentMethod.name,
                               style: theme.textTheme.bodyMedium!
                                   .copyWith(fontWeight: FontWeight.w600),
                             ),
                             subtitle: Text(
-                              '\$${product.price.toStringAsFixed(2)}',
+                              paymentMethod.description,
                               style: theme.textTheme.labelMedium,
                             ),
                             trailing: const Icon(Icons.navigate_next_outlined),
@@ -156,14 +172,15 @@ class _ProductsPageState extends State<ProductsPage> {
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ProductPage(product: product),
+                                  builder: (context) => PaymentMethodPage(
+                                    paymentMethod: paymentMethod,
+                                  ),
                                 ),
                               );
 
                               if (result != null && result == true) {
-                                // Reload product list
-                                await _updateProductList();
+                                // Reload payment method list
+                                await _updatePaymentMethodList();
                               }
                             },
                           ),

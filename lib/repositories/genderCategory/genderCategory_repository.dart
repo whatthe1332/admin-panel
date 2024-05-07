@@ -32,14 +32,17 @@ class GenderCategoryRepository {
 
   Future<void> addGenderCategory(GenderCategory newGenderCategory) async {
     try {
-      await _genderCategoryCollection.add({
+      DocumentReference docRef = await _genderCategoryCollection.add({
         'Name': newGenderCategory.name,
         'IsActive': newGenderCategory.isActive,
         'CreateBy': newGenderCategory.createdBy,
         'CreateDate': newGenderCategory.createDate,
-        'UpdatedDate': newGenderCategory.updatedDate,
+        'UpdateDate': newGenderCategory.updatedDate,
         'UpdateBy': newGenderCategory.updatedBy,
       });
+
+      // Update GenderCategoryId with the document id
+      await docRef.update({'GenderCategoryId': docRef.id});
     } catch (error) {
       print('Error adding gender category: $error');
       throw error;

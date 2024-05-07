@@ -7,15 +7,16 @@ class PaymentMethod {
   final DateTime updatedDate;
   final String updatedBy;
   final String description;
+  String icon;
 
-  PaymentMethod({
-    required this.paymentMethodId,
-    required this.name,
-    required this.isActive,
-    required this.createdBy,
-    required this.createDate,
-    required this.updatedDate,
-    required this.updatedBy,
-    required this.description,
-  });
+  PaymentMethod(
+      {required this.paymentMethodId,
+      required this.name,
+      required this.isActive,
+      required this.createdBy,
+      required this.createDate,
+      required this.updatedDate,
+      required this.updatedBy,
+      required this.description,
+      required this.icon});
 }

@@ -97,7 +97,7 @@ class CustomerRepository {
 
   Future<void> addCustomer(Customer newCustomer) async {
     try {
-      await _customerCollection.add({
+      DocumentReference docRef = await _customerCollection.add({
         'customerName': newCustomer.customerName,
         'customerEmail': newCustomer.customerEmail,
         'customerPassword': newCustomer.customerPassword,
@@ -110,8 +110,20 @@ class CustomerRepository {
         'customerGender': newCustomer.customerGender,
         'customerBirthDay': newCustomer.customerBirthDay,
       });
+
+      // Update CustomerId with the document id
+      await docRef.update({'customerId': docRef.id});
     } catch (error) {
       print('Error adding customer: $error');
+      throw error;
+    }
+  }
+
+  Future<void> deleteCustomer(String customerId) async {
+    try {
+      await _customerCollection.doc(customerId).delete();
+    } catch (error) {
+      print('Error deleting customer: $error');
       throw error;
     }
   }

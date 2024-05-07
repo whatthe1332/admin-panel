@@ -164,7 +164,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ],
             ),
             const Gap(16),
-            const Gap(16),
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -304,14 +303,14 @@ class _AddProductPageState extends State<AddProductPage> {
             Row(
               children: [
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('Save'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm'),
                   onPressed: _saveProduct,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.navigate_before),
-                  label: const Text('Back'),
+                  label: const Text('Quay lại'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },

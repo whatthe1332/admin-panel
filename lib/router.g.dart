@@ -105,6 +105,20 @@ RouteBase get $shellRouteData => StatefulShellRouteData.$route(
             ),
           ],
         ),
+        StatefulShellBranchData.$branch(
+          routes: [
+            GoRouteData.$route(
+              path: '/paymentMethod',
+              factory: $PaymentMethodsPageRouteExtension._fromState,
+              routes: [
+                GoRouteData.$route(
+                  path: ':paymentMethodId',
+                  factory: $PaymentMethodPageRouteExtension._fromState,
+                ),
+              ],
+            ),
+          ],
+        ),
       ],
     );
 
@@ -341,6 +355,40 @@ extension $AvailableSizeProductPageRouteExtension
   String get location => GoRouteData.$location(
         '/availableSizeProduct/${id}',
       );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $PaymentMethodsPageRouteExtension on PaymentMethodsPageRoute {
+  static PaymentMethodsPageRoute _fromState(GoRouterState state) =>
+      const PaymentMethodsPageRoute();
+
+  String get location => GoRouteData.$location('/paymentMethod');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $PaymentMethodPageRouteExtension on PaymentMethodPageRoute {
+  static PaymentMethodPageRoute _fromState(GoRouterState state) =>
+      PaymentMethodPageRoute(
+          paymentMethodId: state.pathParameters['paymentMethodId']!);
+
+  String get location =>
+      GoRouteData.$location('/paymentMethod/${paymentMethodId}');
 
   void go(BuildContext context) => context.go(location);
 

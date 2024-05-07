@@ -1,31 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ltdddoan/model/productcategory_model.dart';
-import 'package:flutter_ltdddoan/repositories/productCategory/productCategory_repository.dart';
-import 'package:gap/gap.dart';
+import 'package:flutter_ltdddoan/model/gendercategory_model.dart';
+import 'package:flutter_ltdddoan/repositories/genderCategory/genderCategory_repository.dart';
+import 'package:flutter_ltdddoan/widgets/content_view.dart';
 
-import '../../widgets/widgets.dart';
-
-class ProductCategoryPage extends StatefulWidget {
-  const ProductCategoryPage({Key? key, required this.productCategory})
-      : super(key: key);
-
-  final ProductCategory productCategory;
+class AddGenderCategoryPage extends StatefulWidget {
+  const AddGenderCategoryPage({Key? key}) : super(key: key);
 
   @override
-  _ProductCategoryPageState createState() => _ProductCategoryPageState();
+  _AddGenderCategoryPageState createState() => _AddGenderCategoryPageState();
 }
 
-class _ProductCategoryPageState extends State<ProductCategoryPage> {
+class _AddGenderCategoryPageState extends State<AddGenderCategoryPage> {
   late final TextEditingController _nameController;
   late bool _isActive;
-  late final ProductCategoryRepository _productCategoryRepository;
+  late final GenderCategoryRepository _genderCategoryRepository;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.productCategory.name);
-    _isActive = widget.productCategory.isActive;
-    _productCategoryRepository = ProductCategoryRepository();
+    _nameController = TextEditingController();
+    _isActive = true; // Set default value for IsActive
+    _genderCategoryRepository = GenderCategoryRepository();
   }
 
   @override
@@ -48,7 +43,7 @@ class _ProductCategoryPageState extends State<ProductCategoryPage> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const Gap(16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Text('Is Active:'),
@@ -62,18 +57,18 @@ class _ProductCategoryPageState extends State<ProductCategoryPage> {
                 ),
               ],
             ),
-            const Gap(16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('Save'),
-                  onPressed: _saveProductCategory,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm'),
+                  onPressed: _saveGenderCategory,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.navigate_before),
-                  label: const Text('Back'),
+                  label: const Text('Quay lại'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -86,23 +81,22 @@ class _ProductCategoryPageState extends State<ProductCategoryPage> {
     );
   }
 
-  Future<void> _saveProductCategory() async {
-    final updatedProductCategory = ProductCategory(
-      productCategoryId: widget.productCategory.productCategoryId,
+  Future<void> _saveGenderCategory() async {
+    final newGenderCategory = GenderCategory(
+      genderCategoryId: '',
       name: _nameController.text,
       isActive: _isActive,
-      createdBy: widget.productCategory.createdBy,
-      createDate: widget.productCategory.createDate,
+      createdBy: 'Admin',
+      createDate: DateTime.now(),
       updatedDate: DateTime.now(),
-      updatedBy: widget.productCategory.updatedBy,
+      updatedBy: 'Admin',
     );
 
     try {
-      await _productCategoryRepository
-          .editProductCategory(updatedProductCategory);
+      await _genderCategoryRepository.addGenderCategory(newGenderCategory);
       Navigator.of(context).pop(true);
     } catch (e) {
-      print('Error saving product category: $e');
+      print('Error saving gender category: $e');
     }
   }
 }

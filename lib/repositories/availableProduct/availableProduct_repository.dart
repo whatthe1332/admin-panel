@@ -26,11 +26,15 @@ class AvailableSizeProductRepository {
   Future<void> addAvailableSizeProduct(
       AvailableSizeProduct newAvailableSizeProduct) async {
     try {
-      await _availableSizeProductCollection.add({
+      DocumentReference docRef = await _availableSizeProductCollection.add({
         'ProductId': newAvailableSizeProduct.productId,
         'SizeProductId': newAvailableSizeProduct.sizeProductId,
         'Quantity': newAvailableSizeProduct.quantity,
       });
+
+      await docRef.update({'id': docRef.id});
+
+      print('Available size product added successfully.');
     } catch (error) {
       print('Error adding available size product: $error');
       throw error;

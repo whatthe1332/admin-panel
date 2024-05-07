@@ -11,10 +11,7 @@ class ProductRepository {
     List<Product> products = [];
 
     try {
-      QuerySnapshot productSnapshot = await _productCollection
-          .where('isActive', isEqualTo: true)
-          .where('isSoldOut', isEqualTo: false)
-          .get();
+      QuerySnapshot productSnapshot = await _productCollection.get();
 
       for (QueryDocumentSnapshot doc in productSnapshot.docs) {
         Product product = Product.fromDocument(doc);
@@ -25,7 +22,7 @@ class ProductRepository {
 
       return products;
     } catch (e) {
-      print('Error getting new active products: $e');
+      print('Error getting all products: $e');
       return [];
     }
   }
@@ -131,10 +128,8 @@ class ProductRepository {
 
   Future<void> deleteProduct(String productId) async {
     try {
-      // Xóa sản phẩm từ Firestore
       await _productCollection.doc(productId).delete();
 
-      // Xóa các hình ảnh liên quan từ Firebase Storage
       await deleteProductImages(productId);
 
       print('Product with ID $productId deleted');

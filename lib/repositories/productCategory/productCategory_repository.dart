@@ -32,7 +32,7 @@ class ProductCategoryRepository {
 
   Future<void> addProductCategory(ProductCategory newProductCategory) async {
     try {
-      await _productCategoryCollection.add({
+      DocumentReference docRef = await _productCategoryCollection.add({
         'Name': newProductCategory.name,
         'IsActive': newProductCategory.isActive,
         'CreateBy': newProductCategory.createdBy,
@@ -40,6 +40,8 @@ class ProductCategoryRepository {
         'UpdatedDate': newProductCategory.updatedDate,
         'UpdateBy': newProductCategory.updatedBy,
       });
+
+      await docRef.update({'ProductCategoryId': docRef.id});
     } catch (error) {
       print('Error adding product category: $error');
       throw error;

@@ -32,7 +32,7 @@ class SizeProductRepository {
 
   Future<void> addSizeProduct(SizeProduct newSizeProduct) async {
     try {
-      await _sizeProductCollection.add({
+      DocumentReference docRef = await _sizeProductCollection.add({
         'Name': newSizeProduct.name,
         'IsActive': newSizeProduct.isActive,
         'CreateBy': newSizeProduct.createdBy,
@@ -40,6 +40,11 @@ class SizeProductRepository {
         'UpdatedDate': newSizeProduct.updatedDate,
         'UpdateBy': newSizeProduct.updatedBy,
       });
+
+      // Cập nhật trường SizeProductId của tài liệu Firestore với giá trị mới
+      await docRef.update({'sizeProductId': docRef.id});
+
+      print('Size product added successfully.');
     } catch (error) {
       print('Error adding size product: $error');
       throw error;

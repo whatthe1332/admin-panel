@@ -5,17 +5,14 @@ import 'package:gap/gap.dart';
 
 import '../../widgets/widgets.dart';
 
-class ProductCategoryPage extends StatefulWidget {
-  const ProductCategoryPage({Key? key, required this.productCategory})
-      : super(key: key);
-
-  final ProductCategory productCategory;
+class AddProductCategoryPage extends StatefulWidget {
+  const AddProductCategoryPage({Key? key}) : super(key: key);
 
   @override
-  _ProductCategoryPageState createState() => _ProductCategoryPageState();
+  _AddProductCategoryPageState createState() => _AddProductCategoryPageState();
 }
 
-class _ProductCategoryPageState extends State<ProductCategoryPage> {
+class _AddProductCategoryPageState extends State<AddProductCategoryPage> {
   late final TextEditingController _nameController;
   late bool _isActive;
   late final ProductCategoryRepository _productCategoryRepository;
@@ -23,8 +20,8 @@ class _ProductCategoryPageState extends State<ProductCategoryPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.productCategory.name);
-    _isActive = widget.productCategory.isActive;
+    _nameController = TextEditingController();
+    _isActive = true; // Set isActive to true by default for new category
     _productCategoryRepository = ProductCategoryRepository();
   }
 
@@ -66,14 +63,14 @@ class _ProductCategoryPageState extends State<ProductCategoryPage> {
             Row(
               children: [
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('Save'),
-                  onPressed: _saveProductCategory,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm'),
+                  onPressed: _addProductCategory,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.navigate_before),
-                  label: const Text('Back'),
+                  label: const Text('Quay lại'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -86,23 +83,22 @@ class _ProductCategoryPageState extends State<ProductCategoryPage> {
     );
   }
 
-  Future<void> _saveProductCategory() async {
-    final updatedProductCategory = ProductCategory(
-      productCategoryId: widget.productCategory.productCategoryId,
+  Future<void> _addProductCategory() async {
+    final newProductCategory = ProductCategory(
+      productCategoryId: '',
       name: _nameController.text,
       isActive: _isActive,
-      createdBy: widget.productCategory.createdBy,
-      createDate: widget.productCategory.createDate,
+      createdBy: 'admin',
+      createDate: DateTime.now(),
       updatedDate: DateTime.now(),
-      updatedBy: widget.productCategory.updatedBy,
+      updatedBy: 'admin',
     );
 
     try {
-      await _productCategoryRepository
-          .editProductCategory(updatedProductCategory);
+      await _productCategoryRepository.addProductCategory(newProductCategory);
       Navigator.of(context).pop(true);
     } catch (e) {
-      print('Error saving product category: $e');
+      print('Error adding product category: $e');
     }
   }
 }

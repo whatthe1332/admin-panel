@@ -8,7 +8,8 @@ enum NavigationItem {
   productCategories(iconData: Icons.pages),
   genderCategories(iconData: Icons.male),
   sizeProduct(iconData: Icons.minimize),
-  availableSizeProduct(iconData: Icons.event_available);
+  availableSizeProduct(iconData: Icons.event_available),
+  paymentMethod(iconData: Icons.money);
 
   const NavigationItem({required this.iconData});
   final IconData iconData;

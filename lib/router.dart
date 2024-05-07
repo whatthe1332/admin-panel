@@ -6,6 +6,9 @@ import 'package:flutter_ltdddoan/features/AvailableSizeProduct/availableSizeProd
 import 'package:flutter_ltdddoan/features/GenderCategory/genderCategories_page.dart';
 import 'package:flutter_ltdddoan/features/GenderCategory/genderCategory_not_found_page.dart';
 import 'package:flutter_ltdddoan/features/GenderCategory/genderCategory_page.dart';
+import 'package:flutter_ltdddoan/features/PaymentMethod/PaymentMethods_page.dart';
+import 'package:flutter_ltdddoan/features/PaymentMethod/paymentMethod_not_found_page.dart';
+import 'package:flutter_ltdddoan/features/PaymentMethod/paymentMethod_page.dart';
 import 'package:flutter_ltdddoan/features/ProductCategory/productCategories_page.dart';
 import 'package:flutter_ltdddoan/features/ProductCategory/productCategory_not_found_page.dart';
 import 'package:flutter_ltdddoan/features/ProductCategory/productCategory_page.dart';
@@ -17,12 +20,14 @@ import 'package:flutter_ltdddoan/features/customers/customer_not_found_page.dart
 import 'package:flutter_ltdddoan/model/available_product_sizes.dart';
 import 'package:flutter_ltdddoan/model/customer_model.dart';
 import 'package:flutter_ltdddoan/model/gendercategory_model.dart';
+import 'package:flutter_ltdddoan/model/paymentmethod_model.dart';
 import 'package:flutter_ltdddoan/model/product_model.dart';
 import 'package:flutter_ltdddoan/model/productcategory_model.dart';
 import 'package:flutter_ltdddoan/model/sizeproduct_model.dart';
 import 'package:flutter_ltdddoan/repositories/availableProduct/availableProduct_repository.dart';
 import 'package:flutter_ltdddoan/repositories/customer/customer_repository.dart';
 import 'package:flutter_ltdddoan/repositories/genderCategory/genderCategory_repository.dart';
+import 'package:flutter_ltdddoan/repositories/payment/paymentmethod_repository.dart';
 import 'package:flutter_ltdddoan/repositories/productCategory/productCategory_repository.dart';
 import 'package:flutter_ltdddoan/repositories/products/product_detail.dart';
 import 'package:flutter_ltdddoan/repositories/sizeProduct/sizeProduct_repository.dart';
@@ -101,6 +106,14 @@ final router = GoRouter(
           routes: [
             TypedGoRoute<AvailableSizeProductPageRoute>(
               path: ':id',
+            ),
+          ],
+        ),
+        TypedGoRoute<PaymentMethodsPageRoute>(
+          path: '/paymentMethod',
+          routes: [
+            TypedGoRoute<PaymentMethodPageRoute>(
+              path: ':paymentMethodId',
             ),
           ],
         ),
@@ -321,6 +334,38 @@ class AvailableSizeProductPageRoute extends GoRouteData {
               ? AvailableSizeProductNotFoundPage()
               : AvailableSizeProductPage(
                   availableSizeProduct: availableSizeProduct);
+        }
+      },
+    );
+  }
+}
+
+class PaymentMethodsPageRoute extends GoRouteData {
+  const PaymentMethodsPageRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const PaymentMethodsPage();
+  }
+}
+
+class PaymentMethodPageRoute extends GoRouteData {
+  final String paymentMethodId;
+
+  const PaymentMethodPageRoute({required this.paymentMethodId});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return FutureBuilder<PaymentMethod?>(
+      future: PaymentMethodRepository().getPaymentMethodById(paymentMethodId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else {
+          final paymentMethod = snapshot.data;
+          return paymentMethod == null
+              ? PaymentMethodNotFoundPage()
+              : PaymentMethodPage(paymentMethod: paymentMethod);
         }
       },
     );
