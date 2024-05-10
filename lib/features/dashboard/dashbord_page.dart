@@ -26,22 +26,22 @@ class DashBoardPage extends StatelessWidget {
         children: [
           const PageHeader(
             title: 'Dashboard',
-            description: 'A summary of key data and insights on your project.',
+            description: '',
           ),
           const Gap(16),
-          if (responsive.isMobile)
-            ...summaryCards
-          else
-            Row(
-              children: summaryCards
-                  .map<Widget>((card) => Expanded(child: card))
-                  .intersperse(const Gap(16))
-                  .toList(),
-            ),
-          const Gap(16),
-          const Expanded(
-            child: _TableView(),
-          ),
+          // if (responsive.isMobile)
+          //   ...summaryCards
+          // else
+          //   Row(
+          //     children: summaryCards
+          //         .map<Widget>((card) => Expanded(child: card))
+          //         .intersperse(const Gap(16))
+          //         .toList(),
+          //   ),
+          // const Gap(16),
+          // const Expanded(
+          //   child: _TableView(),
+          // ),
         ],
       ),
     );

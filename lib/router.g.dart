@@ -98,7 +98,7 @@ RouteBase get $shellRouteData => StatefulShellRouteData.$route(
               factory: $AvailableSizeProductsPageRouteExtension._fromState,
               routes: [
                 GoRouteData.$route(
-                  path: ':id',
+                  path: ':availableSizeProductId',
                   factory: $AvailableSizeProductPageRouteExtension._fromState,
                 ),
               ],
@@ -114,6 +114,34 @@ RouteBase get $shellRouteData => StatefulShellRouteData.$route(
                 GoRouteData.$route(
                   path: ':paymentMethodId',
                   factory: $PaymentMethodPageRouteExtension._fromState,
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranchData.$branch(
+          routes: [
+            GoRouteData.$route(
+              path: '/discount',
+              factory: $DiscountsPageRouteExtension._fromState,
+              routes: [
+                GoRouteData.$route(
+                  path: ':discountId',
+                  factory: $DiscountPageRouteExtension._fromState,
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranchData.$branch(
+          routes: [
+            GoRouteData.$route(
+              path: '/order',
+              factory: $OrdersPageRouteExtension._fromState,
+              routes: [
+                GoRouteData.$route(
+                  path: ':orderId',
+                  factory: $OrderPageRouteExtension._fromState,
                 ),
               ],
             ),
@@ -350,10 +378,12 @@ extension $AvailableSizeProductsPageRouteExtension
 extension $AvailableSizeProductPageRouteExtension
     on AvailableSizeProductPageRoute {
   static AvailableSizeProductPageRoute _fromState(GoRouterState state) =>
-      AvailableSizeProductPageRoute(id: state.pathParameters['id']!);
+      AvailableSizeProductPageRoute(
+          availableSizeProductId:
+              state.pathParameters['availableSizeProductId']!);
 
   String get location => GoRouteData.$location(
-        '/availableSizeProduct/${id}',
+        '/availableSizeProduct/${availableSizeProductId}',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -389,6 +419,70 @@ extension $PaymentMethodPageRouteExtension on PaymentMethodPageRoute {
 
   String get location =>
       GoRouteData.$location('/paymentMethod/${paymentMethodId}');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $DiscountsPageRouteExtension on DiscountsPageRoute {
+  static DiscountsPageRoute _fromState(GoRouterState state) =>
+      const DiscountsPageRoute();
+
+  String get location => GoRouteData.$location('/discount');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $DiscountPageRouteExtension on DiscountPageRoute {
+  static DiscountPageRoute _fromState(GoRouterState state) =>
+      DiscountPageRoute(discountId: state.pathParameters['discountId']!);
+
+  String get location => GoRouteData.$location('/discount/${discountId}');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $OrdersPageRouteExtension on OrdersPageRoute {
+  static OrdersPageRoute _fromState(GoRouterState state) =>
+      const OrdersPageRoute();
+
+  String get location => GoRouteData.$location('/order');
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $OrderPageRouteExtension on OrderPageRoute {
+  static OrderPageRoute _fromState(GoRouterState state) =>
+      OrderPageRoute(orderId: state.pathParameters['orderId']!);
+
+  String get location => GoRouteData.$location('/order/${orderId}');
 
   void go(BuildContext context) => context.go(location);
 

@@ -1,37 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_ltdddoan/features/SizeProduct/add_sizeProduct_page.dart';
-import 'package:flutter_ltdddoan/features/SizeProduct/sizeProduct_page.dart';
-import 'package:flutter_ltdddoan/repositories/sizeProduct/sizeProduct_repository.dart';
+import 'package:flutter_ltdddoan/features/discount/add_discount_page.dart';
+import 'package:flutter_ltdddoan/features/discount/discount_page.dart';
+import 'package:flutter_ltdddoan/repositories/discount/discount_repository.dart';
 import 'package:gap/gap.dart';
-import 'package:flutter_ltdddoan/model/sizeproduct_model.dart';
-import '../../widgets/widgets.dart';
 
-class SizeProductsPage extends StatefulWidget {
-  const SizeProductsPage({Key? key});
+import '../../widgets/widgets.dart';
+import 'package:flutter_ltdddoan/model/discount_model.dart';
+
+class DiscountsPage extends StatefulWidget {
+  const DiscountsPage({Key? key});
 
   @override
-  _SizeProductsPageState createState() => _SizeProductsPageState();
+  _DiscountsPageState createState() => _DiscountsPageState();
 }
 
-class _SizeProductsPageState extends State<SizeProductsPage> {
-  late final SizeProductRepository sizeProductRepository;
+class _DiscountsPageState extends State<DiscountsPage> {
+  late final DiscountRepository discountRepository;
 
   @override
   void initState() {
     super.initState();
-    sizeProductRepository = SizeProductRepository();
+    // Initialize the repository instance
+    discountRepository = DiscountRepository();
   }
 
-  Future<void> _updateSizeProductList() async {
-    setState(() {}); // Trigger rebuild to update size product list
+  Future<void> _updateDiscountList() async {
+    setState(() {});
   }
 
-  Future<bool?> _showDeleteConfirmationDialog(
-      BuildContext context,
-      SizeProduct sizeProduct,
-      List<SizeProduct> sizeProducts,
-      int index) async {
+  Future<bool?> _showDeleteConfirmationDialog(BuildContext context,
+      Discount discount, List<Discount> discounts, int index) async {
     return await showDialog<bool?>(
       context: context,
       barrierDismissible: false,
@@ -41,27 +39,24 @@ class _SizeProductsPageState extends State<SizeProductsPage> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Bạn có chắc muốn xóa kích thước sản phẩm này không?'),
+                Text('Bạn có chắc muốn xóa ưu đãi này không?'),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(false); // Không xóa
+                Navigator.of(context).pop(false);
               },
               child: Text('Không'),
             ),
             TextButton(
               onPressed: () async {
-                // Xác nhận xóa
-                await sizeProductRepository
-                    .deleteSizeProduct(sizeProduct.sizeProductId);
-                // Xóa khỏi danh sách kích thước sản phẩm
+                await discountRepository.deleteDiscount(discount.discountId!);
                 setState(() {
-                  sizeProducts.removeAt(index);
+                  discounts.removeAt(index);
                 });
-                Navigator.of(context).pop(true); // Xác nhận xóa
+                Navigator.of(context).pop(true);
               },
               child: Text('Có'),
             ),
@@ -83,7 +78,7 @@ class _SizeProductsPageState extends State<SizeProductsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Kích thước sản phẩm',
+                'Khuyến mãi',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -94,13 +89,13 @@ class _SizeProductsPageState extends State<SizeProductsPage> {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddSizeProductPage(),
+                      builder: (context) => AddDiscountPage(),
                     ),
                   );
 
                   if (result != null && result == true) {
-                    // Reload size product list
-                    await _updateSizeProductList();
+                    // Reload discount list
+                    await _updateDiscountList();
                   }
                 },
                 child: Text('Thêm'),
@@ -109,54 +104,76 @@ class _SizeProductsPageState extends State<SizeProductsPage> {
           ),
           const Gap(16),
           Expanded(
-            child: FutureBuilder<List<SizeProduct>>(
-              future: sizeProductRepository.getAllSizeProducts(),
+            child: FutureBuilder<List<Discount>>(
+              future: discountRepository.getDiscounts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  List<SizeProduct> sizeProducts = snapshot.data!;
+                  List<Discount> discounts = snapshot.data!;
                   return Card(
                     clipBehavior: Clip.antiAlias,
                     child: ListView.separated(
-                      itemCount: sizeProducts.length,
+                      itemCount: discounts.length,
                       separatorBuilder: (context, index) => const Divider(),
                       itemBuilder: (context, index) {
-                        final sizeProduct = sizeProducts[index];
+                        final discount = discounts[index];
                         return Dismissible(
-                          key: Key(sizeProduct.sizeProductId),
+                          key: Key(discount.discountId!),
                           direction: DismissDirection.startToEnd,
                           confirmDismiss: (direction) async {
-                            // Hiển thị hộp thoại xác nhận và chờ kết quả
+                            // Show confirmation dialog and wait for result
                             return await _showDeleteConfirmationDialog(
-                                context, sizeProduct, sizeProducts, index);
+                                context, discount, discounts, index);
                           },
                           background: Container(
                             alignment: Alignment.centerLeft,
-                            color:
-                                Colors.red, // Background color of delete button
+                            color: Colors.red,
                             child: Icon(Icons.delete),
                           ),
                           child: ListTile(
+                            leading: Image.network(
+                              discount.image.isNotEmpty
+                                  ? discount.image
+                                  : 'assets/images/default_product.png',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (BuildContext context, Object error,
+                                  StackTrace? stackTrace) {
+                                return Image.asset(
+                                  'assets/images/default_product.png',
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
                             title: Text(
-                              sizeProduct.name,
+                              discount.name,
                               style: theme.textTheme.bodyMedium!
                                   .copyWith(fontWeight: FontWeight.w600),
                             ),
+                            subtitle: Text(
+                              discount.description,
+                              style: theme.textTheme.labelMedium,
+                            ),
+                            trailing: const Icon(Icons.navigate_next_outlined),
                             onTap: () async {
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      SizeProductPage(sizeProduct: sizeProduct),
+                                  builder: (context) => DiscountPage(
+                                    discount: discount,
+                                  ),
                                 ),
                               );
 
                               if (result != null && result == true) {
-                                // Reload size product list
-                                await _updateSizeProductList();
+                                // Reload discount list
+                                await _updateDiscountList();
                               }
                             },
                           ),

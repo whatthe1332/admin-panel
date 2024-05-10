@@ -10,6 +10,7 @@ class Discount {
   final double value;
   final int quantity;
   final double price;
+  String image;
 
   Discount({
     required this.discountId,
@@ -23,5 +24,6 @@ class Discount {
     required this.value,
     required this.quantity,
     required this.price,
+    required this.image,
   });
 }

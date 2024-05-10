@@ -12,16 +12,16 @@ class SizeProductRepository {
       sizeProducts = snapshot.docs.map((doc) {
         return SizeProduct(
           sizeProductId: doc.id,
-          name: doc['Name'],
-          isActive: doc['IsActive'],
-          createdBy: doc['CreateBy'],
-          createDate: doc['CreateDate'] != null
-              ? (doc['CreateDate'] as Timestamp).toDate()
+          name: doc['name'],
+          isActive: doc['isActive'],
+          createdBy: doc['createdBy'],
+          createDate: doc['createDate'] != null
+              ? (doc['createDate'] as Timestamp).toDate()
               : DateTime.now(),
-          updatedDate: doc['UpdateDate'] != null
-              ? (doc['UpdateDate'] as Timestamp).toDate()
+          updatedDate: doc['updatedDate'] != null
+              ? (doc['updatedDate'] as Timestamp).toDate()
               : DateTime.now(),
-          updatedBy: doc['UpdateBy'],
+          updatedBy: doc['updatedBy'],
         );
       }).toList();
     } catch (error) {
@@ -33,12 +33,12 @@ class SizeProductRepository {
   Future<void> addSizeProduct(SizeProduct newSizeProduct) async {
     try {
       DocumentReference docRef = await _sizeProductCollection.add({
-        'Name': newSizeProduct.name,
-        'IsActive': newSizeProduct.isActive,
-        'CreateBy': newSizeProduct.createdBy,
-        'CreateDate': newSizeProduct.createDate,
-        'UpdatedDate': newSizeProduct.updatedDate,
-        'UpdateBy': newSizeProduct.updatedBy,
+        'name': newSizeProduct.name,
+        'isActive': newSizeProduct.isActive,
+        'createdBy': newSizeProduct.createdBy,
+        'createDate': newSizeProduct.createDate,
+        'updatedDate': newSizeProduct.updatedDate,
+        'updatedBy': newSizeProduct.updatedBy,
       });
 
       // Cập nhật trường SizeProductId của tài liệu Firestore với giá trị mới
@@ -56,10 +56,10 @@ class SizeProductRepository {
       await _sizeProductCollection
           .doc(updatedSizeProduct.sizeProductId)
           .update({
-        'Name': updatedSizeProduct.name,
-        'IsActive': updatedSizeProduct.isActive,
-        'UpdatedDate': updatedSizeProduct.updatedDate,
-        'UpdateBy': updatedSizeProduct.updatedBy,
+        'name': updatedSizeProduct.name,
+        'isActive': updatedSizeProduct.isActive,
+        'updatedDate': updatedSizeProduct.updatedDate,
+        'updatedBy': updatedSizeProduct.updatedBy,
       });
     } catch (error) {
       print('Error editing size product: $error');
@@ -83,16 +83,16 @@ class SizeProductRepository {
       if (snapshot.exists) {
         return SizeProduct(
           sizeProductId: snapshot.id,
-          name: snapshot['Name'],
-          isActive: snapshot['IsActive'],
-          createdBy: snapshot['CreateBy'],
-          createDate: snapshot['CreateDate'] != null
-              ? (snapshot['CreateDate'] as Timestamp).toDate()
+          name: snapshot['name'],
+          isActive: snapshot['isActive'],
+          createdBy: snapshot['createdBy'],
+          createDate: snapshot['createDate'] != null
+              ? (snapshot['createDate'] as Timestamp).toDate()
               : DateTime.now(),
-          updatedDate: snapshot['UpdateDate'] != null
-              ? (snapshot['UpdateDate'] as Timestamp).toDate()
+          updatedDate: snapshot['updatedDate'] != null
+              ? (snapshot['updatedDate'] as Timestamp).toDate()
               : DateTime.now(),
-          updatedBy: snapshot['UpdateBy'],
+          updatedBy: snapshot['updatedBy'],
         );
       } else {
         return null;

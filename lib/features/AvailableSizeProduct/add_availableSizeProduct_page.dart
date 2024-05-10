@@ -3,18 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ltdddoan/model/available_product_sizes.dart';
 import 'package:flutter_ltdddoan/repositories/availableProduct/availableProduct_repository.dart';
 
-class AvailableSizeProductPage extends StatefulWidget {
-  const AvailableSizeProductPage({Key? key, required this.availableSizeProduct})
-      : super(key: key);
-
-  final AvailableSizeProduct availableSizeProduct;
-
+class AddAvailableSizeProductPage extends StatefulWidget {
   @override
-  _AvailableSizeProductPageState createState() =>
-      _AvailableSizeProductPageState();
+  _AddAvailableSizeProductPageState createState() =>
+      _AddAvailableSizeProductPageState();
 }
 
-class _AvailableSizeProductPageState extends State<AvailableSizeProductPage> {
+class _AddAvailableSizeProductPageState
+    extends State<AddAvailableSizeProductPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late List<DropdownMenuItem<String>> _productItems;
   late List<DropdownMenuItem<String>> _sizeProductItems;
@@ -30,14 +26,6 @@ class _AvailableSizeProductPageState extends State<AvailableSizeProductPage> {
     _quantityController = TextEditingController();
     _loadProducts();
     _loadSizeProducts();
-    _initializeFields();
-  }
-
-  void _initializeFields() {
-    // Load data from availableSizeProduct when the page is opened
-    _selectedProductId = widget.availableSizeProduct.productId;
-    _selectedSizeProductId = widget.availableSizeProduct.sizeProductId;
-    _quantityController.text = widget.availableSizeProduct.quantity.toString();
   }
 
   @override
@@ -108,22 +96,9 @@ class _AvailableSizeProductPageState extends State<AvailableSizeProductPage> {
               decoration: InputDecoration(labelText: 'Quantity'),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('Lưu'),
-                  onPressed: _saveAvailableSizeProduct,
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.navigate_before),
-                  label: const Text('Quay lại'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+            ElevatedButton(
+              onPressed: _saveAvailableSizeProduct,
+              child: Text('Save'),
             ),
           ],
         ),
@@ -135,16 +110,15 @@ class _AvailableSizeProductPageState extends State<AvailableSizeProductPage> {
     if (_selectedProductId != null &&
         _selectedSizeProductId != null &&
         _quantityController.text.isNotEmpty) {
-      final updatedAvailableSizeProduct = AvailableSizeProduct(
+      final newAvailableSizeProduct = AvailableSizeProduct(
         productId: _selectedProductId!,
         sizeProductId: _selectedSizeProductId!,
         quantity: int.parse(_quantityController.text),
-        availableSizeProductId:
-            widget.availableSizeProduct.availableSizeProductId,
+        availableSizeProductId: '',
       );
       try {
         await availableSizeProductRepository
-            .editAvailableSizeProduct(updatedAvailableSizeProduct);
+            .addAvailableSizeProduct(newAvailableSizeProduct);
         Navigator.of(context).pop(true);
       } catch (e) {
         print('Error saving available size product: $e');

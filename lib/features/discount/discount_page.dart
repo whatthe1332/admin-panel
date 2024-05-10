@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ltdddoan/model/paymentmethod_model.dart';
-import 'package:flutter_ltdddoan/repositories/payment/paymentmethod_repository.dart';
+import 'package:flutter_ltdddoan/model/discount_model.dart';
+import 'package:flutter_ltdddoan/repositories/discount/discount_repository.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../widgets/widgets.dart';
 
-class AddPaymentMethodPage extends StatefulWidget {
-  const AddPaymentMethodPage({Key? key}) : super(key: key);
+class DiscountPage extends StatefulWidget {
+  const DiscountPage({Key? key, required this.discount}) : super(key: key);
+
+  final Discount discount;
 
   @override
-  _AddPaymentMethodPageState createState() => _AddPaymentMethodPageState();
+  _DiscountPageState createState() => _DiscountPageState();
 }
 
-class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
-  PaymentMethodRepository paymentMethodRepository = PaymentMethodRepository();
+class _DiscountPageState extends State<DiscountPage> {
+  DiscountRepository discountRepository = DiscountRepository();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+  late TextEditingController _valueController;
+  late TextEditingController _quantityController;
+  late TextEditingController _priceController;
   bool _isActive = false;
   String _tempImagePath = '';
   int? _hoveredImageIndex;
@@ -23,8 +28,17 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
-    _descriptionController = TextEditingController();
+    _nameController = TextEditingController(text: widget.discount.name ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.discount.description ?? '');
+    _valueController =
+        TextEditingController(text: widget.discount.value?.toString() ?? '');
+    _quantityController =
+        TextEditingController(text: widget.discount.quantity?.toString() ?? '');
+    _priceController =
+        TextEditingController(text: widget.discount.price?.toString() ?? '');
+    _isActive = widget.discount.isActive ?? false;
+    _loadImageUrls();
   }
 
   @override
@@ -44,6 +58,19 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
     setState(() {
       _hoveredImageIndex = null;
     });
+  }
+
+  Future<void> _loadImageUrls() async {
+    try {
+      String documentId = widget.discount.discountId!;
+      List<String> imageUrls =
+          await discountRepository.getImageUrls(documentId);
+      setState(() {
+        _tempImagePath = imageUrls.first;
+      });
+    } catch (e) {
+      print('Error loading image URLs: $e');
+    }
   }
 
   @override
@@ -89,6 +116,30 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
               ),
             ),
             const Gap(16),
+            TextField(
+              controller: _valueController,
+              decoration: InputDecoration(
+                labelText: 'Value',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const Gap(16),
+            TextField(
+              controller: _quantityController,
+              decoration: InputDecoration(
+                labelText: 'Quantity',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const Gap(16),
+            TextField(
+              controller: _priceController,
+              decoration: InputDecoration(
+                labelText: 'Price',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const Gap(16),
             Row(
               children: [
                 Text('Is Active:'),
@@ -96,7 +147,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                   value: _isActive,
                   onChanged: (value) {
                     setState(() {
-                      _isActive = value!;
+                      _isActive = value ?? false;
                     });
                   },
                 ),
@@ -106,9 +157,9 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
             Row(
               children: [
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: const Text('Thêm'),
-                  onPressed: _savePaymentMethod,
+                  icon: const Icon(Icons.save),
+                  label: const Text('Lưu'),
+                  onPressed: _saveDiscount,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
@@ -131,15 +182,13 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
       Padding(
         padding: const EdgeInsets.all(8.0),
         child: MouseRegion(
-          // Khi người dùng rê vào hình ảnh
           onEnter: (_) => _startHover(0),
-          // Khi người dùng dừng rê vào hình ảnh
           onExit: (_) => _stopHover(),
           child: Stack(
             children: [
               GestureDetector(
                 onTap: () {
-                  // Xử lý khi người dùng nhấn vào hình ảnh
+                  // Handle image tap
                 },
                 child: Image.network(
                   _tempImagePath,
@@ -148,7 +197,6 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                   fit: BoxFit.cover,
                 ),
               ),
-              // Nút xóa chỉ hiển thị khi chỉ số của hình ảnh khớp với hình ảnh được rê vào
               if (_hoveredImageIndex == 0)
                 Positioned(
                   top: 0,
@@ -179,6 +227,9 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
     final confirmed = await _confirmDeleteImage();
     if (confirmed != null && confirmed) {
       try {
+        final imageName = 'image_$index.png';
+        discountRepository.deleteImageUrl(
+            widget.discount.discountId!, imageName);
         setState(() {
           _tempImagePath = '';
           _hoveredImageIndex = null;
@@ -194,16 +245,16 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Xác nhận xóa!'),
-          content: Text('Bạn có chắc muốn xóa hình ảnh này chứ?'),
+          title: Text('Confirm Delete!'),
+          content: Text('Are you sure you want to delete this image?'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Có'),
+              child: Text('Yes'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Không'),
+              child: Text('No'),
             ),
           ],
         );
@@ -211,25 +262,27 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
     );
   }
 
-  void _savePaymentMethod() async {
-    final newPaymentMethod = PaymentMethod(
-      paymentMethodId: '',
+  void _saveDiscount() async {
+    final updatedDiscount = Discount(
+      discountId: widget.discount.discountId,
       name: _nameController.text,
       isActive: _isActive,
-      createdBy: 'Admin',
-      createDate: DateTime.now(),
+      createdBy: widget.discount.createdBy,
+      createDate: widget.discount.createDate,
       updatedDate: DateTime.now(),
-      updatedBy: 'Admin',
+      updatedBy: widget.discount.updatedBy,
       description: _descriptionController.text,
-      icon: '',
+      value: widget.discount.value,
+      quantity: widget.discount.quantity,
+      price: widget.discount.price,
+      image: widget.discount.image,
     );
 
     try {
-      await paymentMethodRepository.addPaymentMethod(
-          newPaymentMethod, _tempImagePath);
+      await discountRepository.updateDiscount(updatedDiscount, _tempImagePath);
       Navigator.of(context).pop(true);
     } catch (e) {
-      print('Error add payment method: $e');
+      print('Error saving discount: $e');
     }
   }
 }

@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ltdddoan/model/gendercategory_model.dart';
-import 'package:flutter_ltdddoan/repositories/genderCategory/genderCategory_repository.dart';
+import 'package:flutter_ltdddoan/model/sizeproduct_model.dart';
+import 'package:flutter_ltdddoan/repositories/sizeProduct/sizeProduct_repository.dart';
 import 'package:gap/gap.dart';
 
 import '../../widgets/widgets.dart';
 
-class GenderCategoryPage extends StatefulWidget {
-  const GenderCategoryPage({Key? key, required this.genderCategory})
-      : super(key: key);
-
-  final GenderCategory genderCategory;
+class AddSizeProductPage extends StatefulWidget {
+  const AddSizeProductPage({Key? key}) : super(key: key);
 
   @override
-  _GenderCategoryPageState createState() => _GenderCategoryPageState();
+  _AddSizeProductPageState createState() => _AddSizeProductPageState();
 }
 
-class _GenderCategoryPageState extends State<GenderCategoryPage> {
+class _AddSizeProductPageState extends State<AddSizeProductPage> {
   late final TextEditingController _nameController;
   late bool _isActive;
-  late final GenderCategoryRepository _genderCategoryRepository;
+  late final SizeProductRepository _sizeProductRepository;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.genderCategory.name);
-    _isActive = widget.genderCategory.isActive;
-    _genderCategoryRepository = GenderCategoryRepository();
+    _nameController = TextEditingController();
+    _isActive = true; // Set isActive to true by default for new size product
+    _sizeProductRepository = SizeProductRepository();
   }
 
   @override
@@ -66,9 +63,9 @@ class _GenderCategoryPageState extends State<GenderCategoryPage> {
             Row(
               children: [
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('Lưu'),
-                  onPressed: _saveGenderCategory,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm'),
+                  onPressed: _addSizeProduct,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
@@ -86,22 +83,22 @@ class _GenderCategoryPageState extends State<GenderCategoryPage> {
     );
   }
 
-  Future<void> _saveGenderCategory() async {
-    final updatedGenderCategory = GenderCategory(
-      genderCategoryId: widget.genderCategory.genderCategoryId,
+  Future<void> _addSizeProduct() async {
+    final newSizeProduct = SizeProduct(
+      sizeProductId: '',
       name: _nameController.text,
       isActive: _isActive,
-      createdBy: widget.genderCategory.createdBy,
-      createDate: widget.genderCategory.createDate,
+      createdBy: 'admin',
+      createDate: DateTime.now(),
       updatedDate: DateTime.now(),
-      updatedBy: widget.genderCategory.updatedBy,
+      updatedBy: 'admin',
     );
 
     try {
-      await _genderCategoryRepository.editGenderCategory(updatedGenderCategory);
+      await _sizeProductRepository.addSizeProduct(newSizeProduct);
       Navigator.of(context).pop(true);
     } catch (e) {
-      print('Error saving gender category: $e');
+      print('Error adding size product: $e');
     }
   }
 }

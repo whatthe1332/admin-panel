@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ltdddoan/repositories/payment/paymentmethod_repository.dart';
 import 'package:gap/gap.dart';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../widgets/widgets.dart';
 import 'add_paymentMethod_page.dart';
 import 'paymentMethod_page.dart';
@@ -27,6 +27,16 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
 
   Future<void> _updatePaymentMethodList() async {
     setState(() {}); // Trigger rebuild to update payment method list
+  }
+
+  Future<String> _getImageUrl(String imagePath) async {
+    if (imagePath.isNotEmpty) {
+      final ref = FirebaseStorage.instance.ref().child(imagePath);
+      final url = await ref.getDownloadURL();
+      return url;
+    } else {
+      return '';
+    }
   }
 
   Future<bool?> _showDeleteConfirmationDialog(
@@ -149,7 +159,6 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
                               fit: BoxFit.cover,
                               errorBuilder: (BuildContext context, Object error,
                                   StackTrace? stackTrace) {
-                                // Xử lý khi hình ảnh không thể tải
                                 return Image.asset(
                                   'assets/images/default_product.png',
                                   width: 50,

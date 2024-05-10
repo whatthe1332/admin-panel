@@ -17,16 +17,26 @@ import 'package:flutter_ltdddoan/features/SizeProduct/SizeProduct_not_found_page
 import 'package:flutter_ltdddoan/features/SizeProduct/SizeProducts_page.dart';
 import 'package:flutter_ltdddoan/features/SizeProduct/sizeProduct_page.dart';
 import 'package:flutter_ltdddoan/features/customers/customer_not_found_page.dart';
+import 'package:flutter_ltdddoan/features/discount/discount_not_found_page.dart';
+import 'package:flutter_ltdddoan/features/discount/discount_page.dart';
+import 'package:flutter_ltdddoan/features/discount/discounts_page.dart';
+import 'package:flutter_ltdddoan/features/order/order_not_found_page.dart';
+import 'package:flutter_ltdddoan/features/order/order_page.dart';
+import 'package:flutter_ltdddoan/features/order/orders_page.dart';
 import 'package:flutter_ltdddoan/model/available_product_sizes.dart';
 import 'package:flutter_ltdddoan/model/customer_model.dart';
+import 'package:flutter_ltdddoan/model/discount_model.dart';
 import 'package:flutter_ltdddoan/model/gendercategory_model.dart';
+import 'package:flutter_ltdddoan/model/order_model.dart';
 import 'package:flutter_ltdddoan/model/paymentmethod_model.dart';
 import 'package:flutter_ltdddoan/model/product_model.dart';
 import 'package:flutter_ltdddoan/model/productcategory_model.dart';
 import 'package:flutter_ltdddoan/model/sizeproduct_model.dart';
 import 'package:flutter_ltdddoan/repositories/availableProduct/availableProduct_repository.dart';
 import 'package:flutter_ltdddoan/repositories/customer/customer_repository.dart';
+import 'package:flutter_ltdddoan/repositories/discount/discount_repository.dart';
 import 'package:flutter_ltdddoan/repositories/genderCategory/genderCategory_repository.dart';
+import 'package:flutter_ltdddoan/repositories/order/order_repository.dart';
 import 'package:flutter_ltdddoan/repositories/payment/paymentmethod_repository.dart';
 import 'package:flutter_ltdddoan/repositories/productCategory/productCategory_repository.dart';
 import 'package:flutter_ltdddoan/repositories/products/product_detail.dart';
@@ -105,7 +115,7 @@ final router = GoRouter(
           path: '/availableSizeProduct',
           routes: [
             TypedGoRoute<AvailableSizeProductPageRoute>(
-              path: ':id',
+              path: ':availableSizeProductId',
             ),
           ],
         ),
@@ -114,6 +124,22 @@ final router = GoRouter(
           routes: [
             TypedGoRoute<PaymentMethodPageRoute>(
               path: ':paymentMethodId',
+            ),
+          ],
+        ),
+        TypedGoRoute<PaymentMethodsPageRoute>(
+          path: '/discount',
+          routes: [
+            TypedGoRoute<PaymentMethodPageRoute>(
+              path: ':discountId',
+            ),
+          ],
+        ),
+        TypedGoRoute<OrdersPageRoute>(
+          path: '/order',
+          routes: [
+            TypedGoRoute<OrderPageRoute>(
+              path: ':orderId',
             ),
           ],
         ),
@@ -317,14 +343,15 @@ class AvailableSizeProductsPageRoute extends GoRouteData {
 }
 
 class AvailableSizeProductPageRoute extends GoRouteData {
-  final String id;
+  final String availableSizeProductId;
 
-  const AvailableSizeProductPageRoute({required this.id});
+  const AvailableSizeProductPageRoute({required this.availableSizeProductId});
 
   @override
   Widget builder(BuildContext context, GoRouterState state) {
     return FutureBuilder<AvailableSizeProduct?>(
-      future: AvailableSizeProductRepository().getAvailableSizeProductById(id),
+      future: AvailableSizeProductRepository()
+          .getAvailableSizeProductById(availableSizeProductId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -366,6 +393,70 @@ class PaymentMethodPageRoute extends GoRouteData {
           return paymentMethod == null
               ? PaymentMethodNotFoundPage()
               : PaymentMethodPage(paymentMethod: paymentMethod);
+        }
+      },
+    );
+  }
+}
+
+class DiscountsPageRoute extends GoRouteData {
+  const DiscountsPageRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const DiscountsPage();
+  }
+}
+
+class DiscountPageRoute extends GoRouteData {
+  final String discountId;
+
+  const DiscountPageRoute({required this.discountId});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return FutureBuilder<Discount?>(
+      future: DiscountRepository().getDiscountById(discountId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else {
+          final discount = snapshot.data;
+          return discount == null
+              ? const DiscountNotFoundPage()
+              : DiscountPage(discount: discount);
+        }
+      },
+    );
+  }
+}
+
+class OrdersPageRoute extends GoRouteData {
+  const OrdersPageRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const OrdersPage();
+  }
+}
+
+class OrderPageRoute extends GoRouteData {
+  final String orderId;
+
+  const OrderPageRoute({required this.orderId});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return FutureBuilder<OrderModel?>(
+      future: OrderRepository().getOrderById(orderId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else {
+          final order = snapshot.data;
+          return order == null
+              ? const OrderNotFoundPage()
+              : OrderPage(order: order);
         }
       },
     );

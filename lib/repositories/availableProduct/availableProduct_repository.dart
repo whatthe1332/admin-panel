@@ -11,10 +11,10 @@ class AvailableSizeProductRepository {
       QuerySnapshot snapshot = await _availableSizeProductCollection.get();
       availableSizeProducts = snapshot.docs.map((doc) {
         return AvailableSizeProduct(
-          id: doc.id,
-          productId: doc['ProductId'],
-          sizeProductId: doc['SizeProductId'],
-          quantity: doc['Quantity'],
+          availableSizeProductId: doc.id,
+          productId: doc['productId'],
+          sizeProductId: doc['sizeProductId'],
+          quantity: doc['quantity'],
         );
       }).toList();
     } catch (error) {
@@ -27,9 +27,9 @@ class AvailableSizeProductRepository {
       AvailableSizeProduct newAvailableSizeProduct) async {
     try {
       DocumentReference docRef = await _availableSizeProductCollection.add({
-        'ProductId': newAvailableSizeProduct.productId,
-        'SizeProductId': newAvailableSizeProduct.sizeProductId,
-        'Quantity': newAvailableSizeProduct.quantity,
+        'productId': newAvailableSizeProduct.productId,
+        'sizeProductId': newAvailableSizeProduct.sizeProductId,
+        'quantity': newAvailableSizeProduct.quantity,
       });
 
       await docRef.update({'id': docRef.id});
@@ -45,11 +45,11 @@ class AvailableSizeProductRepository {
       AvailableSizeProduct updatedAvailableSizeProduct) async {
     try {
       await _availableSizeProductCollection
-          .doc(updatedAvailableSizeProduct.id)
+          .doc(updatedAvailableSizeProduct.availableSizeProductId)
           .update({
-        'ProductId': updatedAvailableSizeProduct.productId,
-        'SizeProductId': updatedAvailableSizeProduct.sizeProductId,
-        'Quantity': updatedAvailableSizeProduct.quantity,
+        'productId': updatedAvailableSizeProduct.productId,
+        'sizeProductId': updatedAvailableSizeProduct.sizeProductId,
+        'quantity': updatedAvailableSizeProduct.quantity,
       });
     } catch (error) {
       print('Error editing available size product: $error');
@@ -76,10 +76,10 @@ class AvailableSizeProductRepository {
           .get();
       if (snapshot.exists) {
         return AvailableSizeProduct(
-          id: snapshot.id,
-          productId: snapshot['ProductId'],
-          sizeProductId: snapshot['SizeProductId'],
-          quantity: snapshot['Quantity'],
+          availableSizeProductId: snapshot.id,
+          productId: snapshot['productId'],
+          sizeProductId: snapshot['sizeProductId'],
+          quantity: snapshot['quantity'],
         );
       } else {
         return null;

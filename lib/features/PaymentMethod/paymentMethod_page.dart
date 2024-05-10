@@ -127,13 +127,13 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
               children: [
                 ElevatedButton.icon(
                   icon: const Icon(Icons.save),
-                  label: const Text('Save'),
+                  label: const Text('Lưu'),
                   onPressed: _savePaymentMethod,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.navigate_before),
-                  label: const Text('Back'),
+                  label: const Text('Quay lại'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
