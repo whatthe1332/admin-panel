@@ -84,7 +84,7 @@ class PaymentMethodRepository {
         'updatedDate': newPaymentMethod.updatedDate,
         'updatedBy': newPaymentMethod.updatedBy,
       });
-
+      await docRef.update({'discountId': docRef.id});
       // Lấy ID của phương thức thanh toán vừa được thêm
       String paymentMethodId = docRef.id;
 

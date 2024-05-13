@@ -126,14 +126,14 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
             Row(
               children: [
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label: const Text('Save'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm'),
                   onPressed: _saveDiscount,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.navigate_before),
-                  label: const Text('Back'),
+                  label: const Text('Quay lại'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },

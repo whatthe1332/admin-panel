@@ -245,16 +245,16 @@ class _DiscountPageState extends State<DiscountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Delete!'),
-          content: Text('Are you sure you want to delete this image?'),
+          title: Text('Xác nhận xóa!'),
+          content: Text('Bạn có chắc muốn xóa hình ảnh này chứ?'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Yes'),
+              child: Text('Có'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('No'),
+              child: Text('Không'),
             ),
           ],
         );

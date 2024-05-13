@@ -2,10 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ltdddoan/model/order_model.dart';
 import 'package:flutter_ltdddoan/model/orderdetail_model.dart';
+import 'package:flutter_ltdddoan/repositories/availableProduct/availableProduct_repository.dart';
 import 'package:flutter_ltdddoan/repositories/order/order_repository.dart';
 import 'package:gap/gap.dart';
 
 import '../../widgets/widgets.dart';
+
+class Pair<A, B> {
+  final A first;
+  final B second;
+
+  Pair(this.first, this.second);
+}
 
 class OrderPage extends StatefulWidget {
   const OrderPage({Key? key, required this.order}) : super(key: key);
@@ -24,6 +32,10 @@ class _OrderPageState extends State<OrderPage> {
   bool _isPay = false;
   late String _productName = '';
   late String _sizeName = '';
+  late final AvailableSizeProductRepository availableSizeProductRepository;
+
+  // Khai báo map để lưu trữ thông tin sản phẩm và kích thước đã được tải
+  Map<String, Pair<String, String>> _productSizeMap = {};
 
   @override
   void initState() {
@@ -31,6 +43,7 @@ class _OrderPageState extends State<OrderPage> {
     _statusValue = null;
     _noteController = TextEditingController(text: widget.order.note);
     _orderRepository = OrderRepository();
+    availableSizeProductRepository = AvailableSizeProductRepository();
     _loadOrderDetails();
     _isPay = widget.order.isPay!;
 
@@ -128,6 +141,11 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  // Phương thức để kiểm tra xem thông tin sản phẩm đã được tải hay chưa
+  bool _isProductSizeLoaded(String availableSizeProductId) {
+    return _productSizeMap.containsKey(availableSizeProductId);
+  }
+
   Future<void> _loadProductAndSizeInfo(String availableSizeProductId) async {
     try {
       // Lấy thông tin sản phẩm từ cơ sở dữ liệu
@@ -157,8 +175,7 @@ class _OrderPageState extends State<OrderPage> {
       String sizeName = sizeData['name'];
 
       setState(() {
-        _productName = productName;
-        _sizeName = sizeName;
+        _productSizeMap[availableSizeProductId] = Pair(productName, sizeName);
       });
     } catch (e) {
       print('Error loading product and size info: $e');
@@ -176,13 +193,21 @@ class _OrderPageState extends State<OrderPage> {
               shrinkWrap: true,
               itemCount: _orderDetails.length,
               itemBuilder: (context, index) {
-                if (_orderDetails.isNotEmpty) {
-                  _loadProductAndSizeInfo(
-                      _orderDetails[index].availableSizeProductId!);
-                } else {
-                  _productName = '';
-                  _sizeName = '';
+                final orderDetail = _orderDetails[index];
+                // Kiểm tra xem thông tin sản phẩm đã được tải hay chưa
+                if (!_isProductSizeLoaded(
+                    orderDetail.availableSizeProductId!)) {
+                  _loadProductAndSizeInfo(orderDetail.availableSizeProductId!);
                 }
+                // Lấy thông tin sản phẩm và kích thước từ map
+                final productName =
+                    _productSizeMap[orderDetail.availableSizeProductId!]
+                            ?.first ??
+                        '';
+                final sizeName =
+                    _productSizeMap[orderDetail.availableSizeProductId!]
+                            ?.second ??
+                        '';
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -200,22 +225,22 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Product Name: $_productName',
+                          'Product Name: $productName',
                           style: TextStyle(fontSize: 10),
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Size Name: $_sizeName',
+                          'Size Name: $sizeName',
                           style: TextStyle(fontSize: 10),
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Price: ${_orderDetails[index].price}',
+                          'Price: ${orderDetail.price}',
                           style: TextStyle(fontSize: 10),
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Quantity: ${_orderDetails[index].quantity}',
+                          'Quantity: ${orderDetail.quantity}',
                           style: TextStyle(fontSize: 10),
                         ),
                       ],

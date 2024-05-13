@@ -96,9 +96,22 @@ class _AddAvailableSizeProductPageState
               decoration: InputDecoration(labelText: 'Quantity'),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _saveAvailableSizeProduct,
-              child: Text('Save'),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.add),
+                  label: const Text('Thêm'),
+                  onPressed: _saveAvailableSizeProduct,
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.navigate_before),
+                  label: const Text('Quay lại'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           ],
         ),
